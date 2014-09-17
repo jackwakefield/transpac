@@ -75,7 +75,10 @@ func (s *server) nonProxyHandler() http.HandlerFunc {
 		// set the absolute URL from the host and relative URL and pass it back
 		// to the proxy server
 		req.RequestURI = ""
+		req.URL.Scheme = "http"
 		req.URL.Host = req.Host
+
+		logger.Info(req.URL.String())
 
 		s.http.ServeHTTP(w, req)
 	})
