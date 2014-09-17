@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"hash/fnv"
 	"io/ioutil"
+	"path"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
 type cacheItem struct {
 	location string
-	hash     uint64
+	filename string
 }
 
 func newCacheItem(location string) *cacheItem {
@@ -19,7 +22,7 @@ func newCacheItem(location string) *cacheItem {
 
 	return &cacheItem{
 		location: location,
-		hash:     hash.Sum64(),
+		filename: fmt.Sprintf("%x", hash.Sum64()),
 	}
 }
 
@@ -31,14 +34,14 @@ func (cache *cacheItem) outOfDate() bool {
 	if lastModified, err := fileModifiedTime(cache.path()); err == nil {
 		// determine whether the last time the file was modified was longer than
 		// the configured cache length
-		return time.Now().Sub(lastModified).Seconds() > float64(*cacheLength)
+		return time.Now().Sub(lastModified).Seconds() > float64(viper.GetInt(cacheLengthKey))
 	}
 
 	return true
 }
 
 func (cache *cacheItem) path() string {
-	return fmt.Sprintf("%s/%x", *cacheDirectory, cache.hash)
+	return path.Join(viper.GetString(cacheDirectoryKey), cache.filename)
 }
 
 func (cache *cacheItem) save(data []byte) error {

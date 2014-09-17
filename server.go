@@ -20,6 +20,7 @@ import (
 
 	"github.com/elazarl/goproxy"
 	"github.com/jackwakefield/gopac"
+	"github.com/spf13/viper"
 )
 
 type server struct {
@@ -67,7 +68,8 @@ func (s *server) forward(r *http.Request, ctx *goproxy.ProxyCtx) (*http.Request,
 }
 
 func (s *server) listen() error {
-	address := fmt.Sprintf(":%d", *serverPort)
+	serverPort := viper.GetInt(serverPortKey)
+	address := fmt.Sprintf(":%d", serverPort)
 	logger.Infof("Proxy server listening on address '%s'", address)
 
 	return http.ListenAndServe(address, s.http)

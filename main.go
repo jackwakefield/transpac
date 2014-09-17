@@ -18,34 +18,67 @@ import (
 	"os"
 
 	"github.com/kdar/factorlog"
-	"gopkg.in/alecthomas/kingpin.v1"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-var (
-	location       = kingpin.Arg("location", "Path or URL of the proxy auto-config (PAC) file.").Required().String()
-	verbose        = kingpin.Flag("verbose", "Enable verbose logging.").Bool()
-	cacheDirectory = kingpin.Flag("cache-dir", "The directory where files are cached to.").Default("/var/cache/transpac").String()
-	cacheLength    = kingpin.Flag("cache-length", "The length of time in seconds to cache downloaded files.").Default("86400").Int64()
-	serverPort     = kingpin.Flag("server-port", "The port the proxy server will listen on.").Default("8080").Int()
+const (
+	locationKey       = "location"
+	verboseKey        = "verbose"
+	cacheDirectoryKey = "cache-dir"
+	cacheLengthKey    = "cache-length"
+	serverPortKey     = "server-port"
 )
 
 func main() {
-	kingpin.Version("1.0.0")
-	kingpin.Parse()
+	transpacCommand := &cobra.Command{
+		Use:   "transpac",
+		Short: "A transparent proxy which uses proxy auto-config (PAC) files for forwarding",
+		Run:   run,
+	}
 
-	if *verbose {
+	flags := transpacCommand.Flags()
+
+	flags.String(locationKey, "", "Path or URL of the proxy auto-config (PAC) file")
+	flags.Bool(verboseKey, false, "Enable verbose logging")
+	flags.String(cacheDirectoryKey, "/var/cache/transpac", "The directory where files are cached to")
+	flags.Int64(cacheLengthKey, 86400, "The length of time in seconds to cache downloaded files")
+	flags.Int(serverPortKey, 8080, "The port the proxy server will listen on")
+
+	viper.SetConfigType("toml")
+	viper.SetConfigName("config")
+	viper.AddConfigPath("/etc/transpac")
+	viper.AddConfigPath("$HOME/.config/transpac")
+	viper.BindPFlag(locationKey, flags.Lookup(locationKey))
+	viper.BindPFlag(verboseKey, flags.Lookup(verboseKey))
+	viper.BindPFlag(cacheDirectoryKey, flags.Lookup(cacheDirectoryKey))
+	viper.BindPFlag(cacheLengthKey, flags.Lookup(cacheLengthKey))
+	viper.BindPFlag(serverPortKey, flags.Lookup(serverPortKey))
+	viper.ReadInConfig()
+
+	transpacCommand.Execute()
+}
+
+func run(cmd *cobra.Command, args []string) {
+	if viper.GetBool("verbose") {
 		logger.SetMinMaxSeverity(factorlog.DEBUG, factorlog.PANIC)
 	} else {
 		logger.SetMinMaxSeverity(factorlog.INFO, factorlog.PANIC)
 	}
 
 	// ensure the cache directory exists
-	if err := os.MkdirAll(*cacheDirectory, 0755); err != nil {
+	if err := os.MkdirAll(viper.GetString(cacheDirectoryKey), 0755); err != nil {
 		logger.Fatalf("Failed to create cache directory (%s)", err)
 	}
 
-	logger.Debugf("Creating proxy auto-config parser for '%s'", *location)
-	p, err := newParser(*location)
+	location := viper.GetString(locationKey)
+
+	if len(location) == 0 {
+		logger.Fatal("You must provide a location for the proxy auto-config file")
+	}
+
+	logger.Debugf("Creating proxy auto-config parser for '%s'", location)
+	p, err := newParser(location)
 
 	if err != nil {
 		logger.Fatalf("Failed to load proxy file (%s)", err)

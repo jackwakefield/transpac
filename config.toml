@@ -1,0 +1,14 @@
+# Path or URL of the proxy auto-config (PAC) file
+;location = ""
+
+# Enable verbose logging
+verbose = false
+
+# The directory where files are cached to
+cache-dir = "/var/cache/transpac"
+
+# The length of time in seconds to cache downloaded files
+cache-length = 86400
+
+# The port the proxy server will listen on
+server-port = 8080
