@@ -31,13 +31,13 @@ const (
 )
 
 func main() {
-	transpacCommand := &cobra.Command{
+	rootCommand := &cobra.Command{
 		Use:   "transpac",
 		Short: "A transparent proxy which uses proxy auto-config (PAC) files for forwarding",
 		Run:   run,
 	}
 
-	flags := transpacCommand.Flags()
+	flags := rootCommand.Flags()
 
 	flags.String(locationKey, "", "Path or URL of the proxy auto-config (PAC) file")
 	flags.Bool(verboseKey, false, "Enable verbose logging")
@@ -56,11 +56,13 @@ func main() {
 	viper.BindPFlag(serverPortKey, flags.Lookup(serverPortKey))
 	viper.ReadInConfig()
 
-	transpacCommand.Execute()
+	rootCommand.Execute()
 }
 
 func run(cmd *cobra.Command, args []string) {
-	if viper.GetBool("verbose") {
+	logger.Info(viper.GetBool(verboseKey))
+
+	if viper.GetBool(verboseKey) {
 		logger.SetMinMaxSeverity(factorlog.DEBUG, factorlog.PANIC)
 	} else {
 		logger.SetMinMaxSeverity(factorlog.INFO, factorlog.PANIC)
