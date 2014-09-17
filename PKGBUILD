@@ -10,7 +10,7 @@ license=('Apache')
 makedepends=('go')
 options=('!strip' '!emptydirs')
 source=("$url/archive/$pkgname-$pkgver.tar.gz")
-sha256sums=('9785c22f970e1047b76ce16155be2ed560606cfed027c9ac8fef8aa158ae9312')
+sha256sums=('18a6d222110863045f8790c58831e8e35d627a0b9c5562dde475fba6bdb8fc8e')
 
 build() {
   cd "$pkgname-$pkgver"
