@@ -3,6 +3,7 @@ Description=Transpac Forwarding Proxy
 After=network.target
 
 [Service]
+User=transpac
 PIDFile=/var/run/transpac.pid
 ExecStart=/usr/bin/transpac
 ExecStop=/usr/bin/killall /usr/bin/transpac
