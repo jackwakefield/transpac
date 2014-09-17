@@ -60,8 +60,6 @@ func main() {
 }
 
 func run(cmd *cobra.Command, args []string) {
-	logger.Info(viper.GetBool(verboseKey))
-
 	if viper.GetBool(verboseKey) {
 		logger.SetMinMaxSeverity(factorlog.DEBUG, factorlog.PANIC)
 	} else {
