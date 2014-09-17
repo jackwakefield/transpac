@@ -19,6 +19,8 @@ _cgo_export.*
 
 _testmain.go
 
+transpac
 *.exe
 *.test
 *.prof
+*.tar.gz
