@@ -1,0 +1,12 @@
+[Unit]
+Description=Transpac Forwarding Proxy
+After=network.target
+
+[Service]
+Type=forking
+User=nobody
+ExecStart=/usr/bin/transpac
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
