@@ -17,7 +17,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"net/url"
 
 	"github.com/jackwakefield/gopac"
 	"github.com/spf13/viper"
@@ -77,11 +76,7 @@ func (s *server) nonProxyHandler() http.HandlerFunc {
 		// to the proxy server
 		var err error
 		req.RequestURI = ""
-
-		if req.URL, err = url.Parse("http://" + req.Host + req.URL.Path); err != nil {
-			logger.Errorf("Failed to parse non-proxy URL (%s)", err)
-			return
-		}
+		req.URL.Host = req.Host
 
 		s.http.ServeHTTP(w, req)
 	})
