@@ -17,16 +17,18 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
-	"github.com/elazarl/goproxy"
 	"github.com/jackwakefield/gopac"
 	"github.com/spf13/viper"
+	"gopkg.in/elazarl/goproxy.v1"
 )
 
 type server struct {
-	parser *gopac.Parser
-	client *http.Client
-	http   *goproxy.ProxyHttpServer
+	parser    *gopac.Parser
+	client    *http.Client
+	http      *goproxy.ProxyHttpServer
+	unproxied *http.Client
 }
 
 func newServer(parser *gopac.Parser, client *http.Client) (s *server) {
@@ -35,6 +37,8 @@ func newServer(parser *gopac.Parser, client *http.Client) (s *server) {
 		client: client,
 		http:   goproxy.NewProxyHttpServer(),
 	}
+
+	s.http.NonproxyHandler = s.nonProxyHandler()
 
 	// determine whether a proxy entry is available for the URL/host for each
 	// HTTP request and if so, forward it to the proxy client
@@ -67,9 +71,28 @@ func (s *server) forward(r *http.Request, ctx *goproxy.ProxyCtx) (*http.Request,
 	return r, nil
 }
 
+func (s *server) nonProxyHandler() http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		// set the absolute URL from the host and relative URL and pass it back
+		// to the proxy server
+		var err error
+		req.RequestURI = ""
+
+		if req.URL, err = url.Parse("http://" + req.Host + req.URL.Path); err != nil {
+			logger.Errorf("Failed to parse non-proxy URL (%s)", err)
+			return
+		}
+
+		s.http.ServeHTTP(w, req)
+	})
+}
+
+func (s *server) address() string {
+	return fmt.Sprintf(":%d", viper.GetInt(serverPortKey))
+}
+
 func (s *server) listen() error {
-	serverPort := viper.GetInt(serverPortKey)
-	address := fmt.Sprintf(":%d", serverPort)
+	address := s.address()
 	logger.Infof("Proxy server listening on address '%s'", address)
 
 	return http.ListenAndServe(address, s.http)
