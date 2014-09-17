@@ -11,7 +11,7 @@ makedepends=('go')
 options=('!strip' '!emptydirs')
 install=transpac.install
 source=("$url/releases/download/v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('eadddfc963d3e937f6cccc51bd5314c9c2143c8ebdb22d92211969f70703e604')
+sha256sums=('582895d391a7e7cac901bd256dd9bc8f644141e873107b283a7c915e961c0493')
 
 build() {
   cd "$pkgname-$pkgver"
