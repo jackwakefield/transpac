@@ -78,8 +78,6 @@ func (s *server) nonProxyHandler() http.HandlerFunc {
 		req.URL.Scheme = "http"
 		req.URL.Host = req.Host
 
-		logger.Info(req.URL.String())
-
 		s.http.ServeHTTP(w, req)
 	})
 }
