@@ -10,7 +10,7 @@ license=('Apache')
 makedepends=('go')
 options=('!strip' '!emptydirs')
 source=("$url/releases/download/v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('18a6d222110863045f8790c58831e8e35d627a0b9c5562dde475fba6bdb8fc8e')
+sha256sums=('fe1d402648631ecee06e74c7831003727acc135db5c78186b5e276b038972bf5')
 
 build() {
   cd "$pkgname-$pkgver"
@@ -23,5 +23,7 @@ package() {
   cd "$pkgname-$pkgver"
 
   install -Dm755 "$pkgname-$pkgver" "$pkgdir/usr/bin/$pkgname"
+  install -Dm644 config.toml "$pkgdir/etc/$pkgname/config.toml"
+  install -Dm644 transpac.service "$pkgdir/usr/lib/systemd/system/transpac.service"
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
