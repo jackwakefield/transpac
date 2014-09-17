@@ -9,7 +9,7 @@ url="https://github.com/jackwakefield/$pkgname/"
 license=('Apache')
 makedepends=('go')
 options=('!strip' '!emptydirs')
-source=("$url/archive/$pkgname-$pkgver.tar.gz")
+source=("$url/releases/download/v$pkgver/$pkgname-$pkgver.tar.gz")
 sha256sums=('18a6d222110863045f8790c58831e8e35d627a0b9c5562dde475fba6bdb8fc8e')
 
 build() {
