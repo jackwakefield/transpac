@@ -7,7 +7,8 @@ install_deps:
 	go get gopkg.in/alecthomas/kingpin.v1
 	go get github.com/jackwakefield/gopac
 	go get github.com/elazarl/goproxy
-	go get github.com/kdar/factorlog
+	go get github.com/spf13/cobra
+	go get github.com/spf13/viper
 
 dist: BASE := transpac-$(VERSION)
 dist:
