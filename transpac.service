@@ -3,11 +3,10 @@ Description=Transpac Forwarding Proxy
 After=network.target
 
 [Service]
-Type=forking
 PIDFile=/var/run/transpac.pid
 ExecStart=/usr/bin/transpac
 ExecStop=/usr/bin/killall /usr/bin/transpac
-Restart=on-abort
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
