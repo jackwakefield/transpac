@@ -9,8 +9,9 @@ url="https://github.com/jackwakefield/$pkgname/"
 license=('Apache')
 makedepends=('go')
 options=('!strip' '!emptydirs')
+install=transpac.install
 source=("$url/releases/download/v$pkgver/$pkgname-$pkgver.tar.gz")
-sha256sums=('fe1d402648631ecee06e74c7831003727acc135db5c78186b5e276b038972bf5')
+sha256sums=('eadddfc963d3e937f6cccc51bd5314c9c2143c8ebdb22d92211969f70703e604')
 
 build() {
   cd "$pkgname-$pkgver"
